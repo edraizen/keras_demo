@@ -42,7 +42,7 @@ function usage() {
         | less -e
 }
 
-keras_img="${PWD}/NIH-HPC-keras_demo-master.img"
+keras_img="${PWD}/edraizen-Singularity-master.simg"
 keras_backend="tensorflow"
 cmd="help"
 
@@ -63,6 +63,11 @@ while true; do
             shift
             break
             ;;
+        shell)
+            cmd="shell"
+            shift
+            break
+            ;;
         *)
             usage
             exit 1
@@ -73,15 +78,20 @@ done
 export SINGULARITY_BINDPATH="/gs2,/gs3,/gs4,/gs5,/gs6,/gs7,/gs8,/gpfs,/spin1,/data,/pdb,/scratch,/fdb,/lscratch"
 export KERAS_BACKEND="$keras_backend"
 
+module load singularity/2.4
+
 case "$cmd" in
     ipython)
         singularity exec --nv "${keras_img}" ipython "$@"
         ;;
     python)
-        singularity exec --nv "${keras_img}" python3 "$@"
+        singularity exec --nv "${keras_img}" python "$@"
         ;;
     notebook)
-        singularity exec --nv "${keras_img}" jupyter notebook --no-browser
+        singularity exec --nv "${keras_img}" jupyter notebook "$@"
+        ;;
+    shell)
+        singularity shell "${keras_img}" "$@"
         ;;
     help)
         usage
